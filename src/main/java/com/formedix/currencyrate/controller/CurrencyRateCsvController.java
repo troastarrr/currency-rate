@@ -29,5 +29,5 @@ public interface CurrencyRateCsvController {
             description = "Retrieves th current uploaded csv",
             tags = "CSV File Management"
     )
-    ResponseEntity<CurrencyRates> getCurrentCsvUpload();
+    ResponseEntity<CurrencyRates> getCurrentCsvRates();
 }

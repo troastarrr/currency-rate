@@ -44,7 +44,7 @@ public class CurrencyRateCsvControllerImpl implements CurrencyRateCsvController 
      * @return the ResponseEntity containing the current currency rates
      */
     @Override
-    public ResponseEntity<CurrencyRates> getCurrentCsvUpload() {
+    public ResponseEntity<CurrencyRates> getCurrentCsvRates() {
         return ResponseEntity.ok(currencyRateCsvService.getCurrentCurrencyRates());
     }
 }
