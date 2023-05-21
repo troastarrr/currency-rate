@@ -5,3 +5,5 @@ csv:
   defaultCurrencyRateFilePath: classpath:/templates/csv/default-currency-rates.csv
   maxUploadFileSize: 10
   maxRequestSize: 10
+
+root-uri: /formedix
