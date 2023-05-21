@@ -1,4 +1,4 @@
-# Rormedix Sight App: Currency Rate API
+# Formedix App: Currency Rate API
 
 The Currency Rate API provides endpoints for managing currency rate transactions.
 
@@ -13,7 +13,8 @@ To configure the Currency Rate Controller, follow these steps:
 
 ## Initial Data
 
-By default, the application loads the `default-currency-rates.csv` file during startup. This file contains the initial
+By default, the application loads the `src/main/resources/templates/csv/default-currency-rates.csv` file during startup.
+This file contains the initial
 currency rate data. If you want to override the default data, you can upload a new CSV file using the provided API
 endpoint.
 
