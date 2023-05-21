@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class WebServerConfiguration {
-    @Value("${root-uri}")
+    @Value("${rootUri}")
     private String rootUri;
 
     @Bean

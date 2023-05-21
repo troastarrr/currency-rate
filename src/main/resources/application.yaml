@@ -6,4 +6,4 @@ csv:
   maxUploadFileSize: 10
   maxRequestSize: 10
 
-root-uri: /formedix
+rootUri: /formedix
