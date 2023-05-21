@@ -1,0 +1,5 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+csv:
+  defaultCurrencyRateFilePath: classpath:/templates/csv/default-currency-rate.csv
