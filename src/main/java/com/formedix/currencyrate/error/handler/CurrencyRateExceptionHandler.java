@@ -2,7 +2,7 @@ package com.formedix.currencyrate.error.handler;
 
 import com.formedix.currencyrate.error.domain.Error;
 import com.formedix.currencyrate.error.domain.ErrorCode;
-import com.formedix.currencyrate.error.exception.CsvUploadException;
+import com.formedix.currencyrate.error.exception.CsvFileException;
 import com.formedix.currencyrate.error.exception.CurrencyRateNotFoundException;
 import com.formedix.currencyrate.error.exception.InvalidDateException;
 import lombok.extern.slf4j.Slf4j;
@@ -54,17 +54,17 @@ public class CurrencyRateExceptionHandler {
     }
 
     /**
-     * Handles the exception when uploading csv file
+     * Handles the exception when handling csv file
      *
      * @param e the exception indicating validation errors
      *
      * @return the response entity with error details
      */
     @ExceptionHandler
-    public ResponseEntity<Error> handleCsvUploadException(CsvUploadException e) {
-        log.warn("CSV upload error occurred: `{}`", e.getMessage());
+    public ResponseEntity<Error> handleCsvFileException(CsvFileException e) {
+        log.warn("CSV file error occurred: `{}`", e.getMessage());
         Error response = new Error()
-                .errorCode(ErrorCode.CSV_UPLOAD_ERROR)
+                .errorCode(e.getErrorCode())
                 .errorMessages(List.of(e.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

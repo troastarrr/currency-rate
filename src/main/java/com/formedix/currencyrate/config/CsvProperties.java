@@ -9,4 +9,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class CsvProperties {
     private String defaultCurrencyRateFilePath;
+    private int maxUploadFileSize;
+    private int maxRequestSize;
 }

@@ -1,6 +1,7 @@
 package com.formedix.currencyrate.service;
 
 import com.formedix.currencyrate.domain.CurrencyRate;
+import com.formedix.currencyrate.domain.CurrencyRates;
 import com.formedix.currencyrate.dto.AverageExchangeRateDto;
 import com.formedix.currencyrate.dto.ConvertCurrencyDto;
 import com.formedix.currencyrate.dto.GetCurrencyRateDto;
@@ -27,7 +28,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class CurrencyRateService {
     private final CurrencyRateMapper currencyRateMapper;
-    private final CurrencyRateRepository<CurrencyRate> currencyRatesCurrencyRateRepository;
+    private final CurrencyRateRepository<CurrencyRate, CurrencyRates> currencyRatesCurrencyRateRepository;
 
     /**
      * Retrieves the currency rates for a specific date.
@@ -39,7 +40,7 @@ public class CurrencyRateService {
      * @throws CurrencyRateNotFoundException if currency rates are not available for the specified date
      */
     public GetCurrencyRateDto getCurrencyRatesByDate(LocalDate date) {
-        return currencyRatesCurrencyRateRepository.findByDate(date)
+        return currencyRatesCurrencyRateRepository.findCurrencyRateByDate(date)
                 .map(currencyRateMapper::toGetCurrencyRateDto)
                 .orElseThrow(() -> new CurrencyRateNotFoundException("Currency rates not available for the specified date: " + date));
     }
@@ -57,7 +58,7 @@ public class CurrencyRateService {
      * @throws CurrencyRateNotFoundException if currency rates are not available for the specified date or currencies
      */
     public ConvertCurrencyDto convertCurrency(LocalDate date, String sourceCurrency, String targetCurrency, BigDecimal amount) {
-        CurrencyRate sourceRate = currencyRatesCurrencyRateRepository.findByDate(date)
+        CurrencyRate sourceRate = currencyRatesCurrencyRateRepository.findCurrencyRateByDate(date)
                 .orElseThrow(() -> new CurrencyRateNotFoundException("Currency rates not available for the specified date: " + date));
 
         BigDecimal sourceRateValue = sourceRate.getCurrencies().get(sourceCurrency);
@@ -131,6 +132,6 @@ public class CurrencyRateService {
     private Stream<CurrencyRate> getCurrencyRateStream(LocalDate startDate, LocalDate endDate) {
         return Stream.iterate(startDate, date -> date.plusDays(1))
                 .limit(ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)))
-                .flatMap(date -> currencyRatesCurrencyRateRepository.findByDate(date).stream());
+                .flatMap(date -> currencyRatesCurrencyRateRepository.findCurrencyRateByDate(date).stream());
     }
 }

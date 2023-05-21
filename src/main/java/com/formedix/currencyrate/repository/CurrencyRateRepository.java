@@ -6,7 +6,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
-public interface CurrencyRateRepository<T> {
+public interface CurrencyRateRepository<T, R> {
 
-    Optional<T> findByDate(LocalDate date);
+    Optional<T> findCurrencyRateByDate(LocalDate date);
+
+    R update(R currencyRates);
+
+    R get();
 }

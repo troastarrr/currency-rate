@@ -1,4 +1,4 @@
-package com.formedix.currencyrate.service;
+package com.formedix.currencyrate.parser;
 
 import com.formedix.currencyrate.domain.CurrencyRate;
 import com.formedix.currencyrate.domain.CurrencyRates;
@@ -23,12 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Parses a CSV file into a {@link CurrencyRates} object using functional style.
- */
 @Component
 @Slf4j
-public class CsvParserService {
+public class CurrencyRateCsvParser {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

@@ -2,10 +2,11 @@ package com.formedix.currencyrate.controller.impl;
 
 import com.formedix.currencyrate.controller.CurrencyRateCsvController;
 import com.formedix.currencyrate.domain.CurrencyRates;
-import com.formedix.currencyrate.error.exception.CsvUploadException;
-import com.formedix.currencyrate.service.CsvParserService;
+import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.exception.CsvFileException;
+import com.formedix.currencyrate.service.CurrencyRateCsvService;
+import com.formedix.currencyrate.validator.CsvValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class CurrencyRateCsvControllerImpl implements CurrencyRateCsvController {
 
-    private final CsvParserService csvParserService;
-    @Autowired
-    private CurrencyRates currencyRates;
+    private final CurrencyRateCsvService currencyRateCsvService;
 
     /**
      * Uploads a CSV file containing currency rate data.
@@ -25,16 +24,17 @@ public class CurrencyRateCsvControllerImpl implements CurrencyRateCsvController 
      *
      * @return the ResponseEntity containing the uploaded currency rates
      *
-     * @throws CsvUploadException if an error occurs while uploading the file
+     * @throws CsvFileException if an error occurs while uploading the file
      */
     @Override
     public ResponseEntity<CurrencyRates> uploadCsvFile(MultipartFile file) {
         try {
-            CurrencyRates uploadedCurrencyRates = csvParserService.parse(file.getInputStream());
-            currencyRates.setRates(uploadedCurrencyRates.getRates());
-            return ResponseEntity.ok(currencyRates);
+            CsvValidator.validate(file);
+            return ResponseEntity.ok(currencyRateCsvService.updateCurrencyRates(file.getInputStream()));
+        } catch (CsvFileException e) {
+            throw e;
         } catch (Exception e) {
-            throw new CsvUploadException("An error occurred while uploading " + file.getOriginalFilename(), e);
+            throw new CsvFileException("An error occurred while uploading " + file.getOriginalFilename(), ErrorCode.CSV_UPLOAD_ERROR, e);
         }
     }
 
@@ -45,6 +45,6 @@ public class CurrencyRateCsvControllerImpl implements CurrencyRateCsvController 
      */
     @Override
     public ResponseEntity<CurrencyRates> getCurrentCsvUpload() {
-        return ResponseEntity.ok(currencyRates);
+        return ResponseEntity.ok(currencyRateCsvService.getCurrentCurrencyRates());
     }
 }
