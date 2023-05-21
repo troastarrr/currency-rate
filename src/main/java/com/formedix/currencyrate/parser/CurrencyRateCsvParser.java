@@ -8,7 +8,6 @@ import com.formedix.currencyrate.validator.CsvValidator;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
@@ -94,7 +93,7 @@ public class CurrencyRateCsvParser {
     private Map<String, BigDecimal> generateCurrencyRateMap(String[] headers, String[] row) {
         return IntStream.range(1, row.length)
                 .mapToObj(i -> new AbstractMap.SimpleEntry<>(getCurrency(i, headers), parseRate(row[i])))
-                .filter(entry -> StringUtils.isNotBlank(entry.getKey()) && entry.getValue() != null)
+                .filter(entry -> entry.getKey() != null && entry.getValue() != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -133,6 +132,6 @@ public class CurrencyRateCsvParser {
      * @return the currency at the specified index, or an empty string if not found
      */
     private String getCurrency(int index, String[] headers) {
-        return (index >= 0 && index < headers.length) ? headers[index] : StringUtils.EMPTY;
+        return (index >= 0 && index < headers.length) ? headers[index] : null;
     }
 }
