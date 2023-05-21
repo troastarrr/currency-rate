@@ -11,4 +11,6 @@ public class ConvertCurrencyDto {
     private String targetCurrency;
     private LocalDate date;
     private BigDecimal convertedAmount;
+    private BigDecimal sourceRate;
+    private BigDecimal targetRate;
 }

@@ -69,7 +69,7 @@ public class CurrencyRateService {
         }
 
         BigDecimal convertedAmount = amount.multiply(targetRateValue).divide(sourceRateValue, 2, RoundingMode.HALF_UP);
-        return currencyRateMapper.toConvertCurrencyDto(date, sourceCurrency, targetCurrency, convertedAmount);
+        return currencyRateMapper.toConvertCurrencyDto(date, sourceCurrency, targetCurrency, convertedAmount, sourceRateValue, targetRateValue);
     }
 
     /**
@@ -88,7 +88,7 @@ public class CurrencyRateService {
                 .filter(rate -> rate.getCurrencies().containsKey(currency))
                 .max(Comparator.comparing(rate -> rate.getCurrencies().get(currency)))
                 .orElseThrow(() -> new CurrencyRateNotFoundException("Currency rates not available for the specified date range and currency"));
-        
+
         return currencyRateMapper.toHighestExchangeRateDto(startDate, endDate, currency, highestRate.getCurrencies().get(currency));
     }
 

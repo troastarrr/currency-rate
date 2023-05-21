@@ -20,7 +20,7 @@ public interface CurrencyRateMapper {
      * @return the mapped GetCurrencyRateDto
      */
     GetCurrencyRateDto toGetCurrencyRateDto(CurrencyRate currencyRate);
-    
+
     /**
      * Maps the given data to a ConvertCurrencyDto.
      *
@@ -28,15 +28,19 @@ public interface CurrencyRateMapper {
      * @param sourceCurrency the source currency
      * @param targetCurrency the target currency
      * @param amount         the converted amount
+     * @param sourceRate     the source  rate
+     * @param targetRate     the target rate
      *
      * @return the mapped ConvertCurrencyDto
      */
-    default ConvertCurrencyDto toConvertCurrencyDto(LocalDate date, String sourceCurrency, String targetCurrency, BigDecimal amount) {
+    default ConvertCurrencyDto toConvertCurrencyDto(LocalDate date, String sourceCurrency, String targetCurrency, BigDecimal amount, BigDecimal sourceRate, BigDecimal targetRate) {
         ConvertCurrencyDto convertCurrencyDto = new ConvertCurrencyDto();
         convertCurrencyDto.setSourceCurrency(sourceCurrency);
         convertCurrencyDto.setTargetCurrency(targetCurrency);
         convertCurrencyDto.setConvertedAmount(amount);
         convertCurrencyDto.setDate(date);
+        convertCurrencyDto.setSourceRate(sourceRate);
+        convertCurrencyDto.setTargetRate(targetRate);
         return convertCurrencyDto;
     }
 
