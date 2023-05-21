@@ -137,6 +137,3 @@ The Currency Rate Controller handles the following error scenarios:
 - `CsvParsingException`: Returns a 400 Bad Request response with an error message.
 - `MethodArgumentNotValidException`: Returns a 400 Bad Request response with validation error messages.
 - Other Exceptions: Returns a 500 Internal Server Error response with an error message.
-
-Feel free to customize and expand the README file as needed to provide additional information about the Currency Rate
-API.
