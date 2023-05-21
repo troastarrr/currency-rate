@@ -3,6 +3,7 @@ package com.formedix.currencyrate.error.handler;
 import com.formedix.currencyrate.error.domain.Error;
 import com.formedix.currencyrate.error.domain.ErrorCode;
 import com.formedix.currencyrate.error.exception.CsvFileException;
+import com.formedix.currencyrate.error.exception.CsvParsingException;
 import com.formedix.currencyrate.error.exception.CurrencyRateNotFoundException;
 import com.formedix.currencyrate.error.exception.InvalidDateException;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class CurrencyRateExceptionHandler {
     public ResponseEntity<Error> handleCurrencyRateNotFoundException(CurrencyRateNotFoundException e) {
         log.warn("Currency rate not found error: `{}`", e.getMessage());
         Error response = new Error()
-                .errorCode(ErrorCode.CURRENCY_RATE_NOT_FOUND)
+                .errorCode(e.getErrorCode())
                 .errorMessages(List.of(e.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
@@ -70,6 +71,22 @@ public class CurrencyRateExceptionHandler {
     }
 
     /**
+     * Handles the exception when parsing csv file
+     *
+     * @param e the exception indicating validation errors
+     *
+     * @return the response entity with error details
+     */
+    @ExceptionHandler
+    public ResponseEntity<Error> handleCsvParsingException(CsvParsingException e) {
+        log.warn("CSV file error occurred: `{}`", e.getMessage());
+        Error response = new Error()
+                .errorCode(e.getErrorCode())
+                .errorMessages(List.of(e.getMessage()));
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Handles the exception when an invalid date range is provided.
      *
      * @param e the exception indicating an invalid date range
@@ -80,7 +97,7 @@ public class CurrencyRateExceptionHandler {
     public ResponseEntity<Error> handleInvalidDateException(InvalidDateException e) {
         log.warn("Invalid date range error: `{}`", e.getMessage());
         Error response = new Error()
-                .errorCode(ErrorCode.INVALID_DATE_RANGE_ERROR)
+                .errorCode(e.getErrorCode())
                 .errorMessages(List.of(e.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -99,17 +116,5 @@ public class CurrencyRateExceptionHandler {
                 .errorCode(ErrorCode.SERVER_ERROR)
                 .errorMessages(List.of(e.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * Builds the error message with the field name and error message.
-     *
-     * @param fieldName the name of the field
-     * @param message   the error message
-     *
-     * @return the formatted error message
-     */
-    private String buildErrorMessage(String fieldName, String message) {
-        return String.format("`%s` `%s`", fieldName, message);
     }
 }

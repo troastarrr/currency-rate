@@ -2,7 +2,6 @@ package com.formedix.currencyrate.error.exception;
 
 import com.formedix.currencyrate.error.domain.ErrorCode;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.UUID;
 
@@ -12,16 +11,17 @@ public class FormedixException extends RuntimeException {
     private final String uuid;
 
     @Getter
-    @Setter
-    private ErrorCode errorCode;
+    private final ErrorCode errorCode;
 
-    public FormedixException(String message) {
+    public FormedixException(String message, ErrorCode errorCode) {
         super(message);
         this.uuid = UUID.randomUUID().toString();
+        this.errorCode = errorCode;
     }
 
-    public FormedixException(String message, Throwable e) {
+    public FormedixException(String message, Throwable e, ErrorCode errorCode) {
         super(message, e);
         this.uuid = UUID.randomUUID().toString();
+        this.errorCode = errorCode;
     }
 }

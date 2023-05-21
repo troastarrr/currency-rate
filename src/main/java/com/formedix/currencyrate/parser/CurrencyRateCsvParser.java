@@ -1,8 +1,10 @@
 package com.formedix.currencyrate.parser;
 
 import com.formedix.currencyrate.domain.CurrencyRate;
-import com.formedix.currencyrate.domain.CurrencyRates;
+import com.formedix.currencyrate.error.domain.ErrorCode;
 import com.formedix.currencyrate.error.exception.CsvParsingException;
+import com.formedix.currencyrate.repository.CurrencyRatesContextHolder;
+import com.formedix.currencyrate.validator.CsvValidator;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +20,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Component
 @Slf4j
@@ -30,64 +34,41 @@ public class CurrencyRateCsvParser {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
-     * Parses the provided CSV file input stream into a {@link CurrencyRates} object.
+     * Parses the provided CSV file input stream into a {@link CurrencyRatesContextHolder} object.
      *
      * @param inputStream the input stream of the CSV file
      *
-     * @return the parsed {@link CurrencyRates} object
+     * @return the parsed {@link CurrencyRatesContextHolder} object
      *
      * @throws CsvParsingException if an error occurs while parsing the CSV file
      */
-    public CurrencyRates parse(InputStream inputStream) throws CsvParsingException {
+    public CurrencyRatesContextHolder parse(InputStream inputStream) throws CsvParsingException {
         try (CSVReader reader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             List<String[]> rows = reader.readAll();
-            validateHeaders(rows);
+            CsvValidator.validateHeaders(rows);
             return createCurrencyRates(rows);
         } catch (IOException | CsvException e) {
-            throw new CsvParsingException("Error occurred while parsing the CSV file", e);
+            throw new CsvParsingException("Error occurred while parsing the CSV file", e, ErrorCode.CSV_PARSING_ERROR);
         }
     }
 
-    /**
-     * Validates the headers of the CSV file.
-     *
-     * @param rows the rows of the CSV file
-     *
-     * @throws CsvParsingException if the CSV file does not have at least 2 columns
-     */
-    private void validateHeaders(List<String[]> rows) throws CsvParsingException {
-        if (rows.isEmpty()) {
-            throw new CsvParsingException("CSV file is empty");
-        }
-        String[] headers = rows.get(0);
-        if (headers != null && headers.length < 2) {
-            throw new CsvParsingException("CSV file must have at least 2 columns");
-        }
-    }
 
     /**
-     * Creates a {@link CurrencyRates} object from the rows of the CSV file.
+     * Creates a {@link CurrencyRatesContextHolder} object from the rows of the CSV file.
      *
      * @param rows the rows of the CSV file
      *
-     * @return the created {@link CurrencyRates} object
+     * @return the created {@link CurrencyRatesContextHolder} object
      */
-    private CurrencyRates createCurrencyRates(List<String[]> rows) {
-        CurrencyRates currencyRates = new CurrencyRates();
+    private CurrencyRatesContextHolder createCurrencyRates(List<String[]> rows) {
+        CurrencyRatesContextHolder currencyRatesContextHolder = new CurrencyRatesContextHolder();
         List<CurrencyRate> rateList = new ArrayList<>();
         List<String[]> dataRows = rows.stream().skip(1).toList();
         String[] headers = rows.get(0);
         dataRows.forEach(row -> {
             try {
                 LocalDate date = parseDate(row[0]);
-                Map<String, BigDecimal> currencies = new HashMap<>();
-                for (int i = 1; i < row.length; i++) {
-                    String currency = getCurrency(i, headers);
-                    BigDecimal rate = parseRate(row[i]);
-                    if (StringUtils.isNotBlank(currency)) {
-                        currencies.put(currency, rate);
-                    }
-                }
+                Map<String, BigDecimal> currencies = generateCurrencyRateMap(headers, row);
                 CurrencyRate currencyRate = new CurrencyRate();
                 currencyRate.setDate(date);
                 currencyRate.setCurrencies(currencies);
@@ -95,11 +76,26 @@ public class CurrencyRateCsvParser {
             } catch (DateTimeParseException e) {
                 String errorMessage = "Unable to parse CSV date with error message: `%s`";
                 log.warn(String.format(errorMessage, e.getMessage()));
-                throw new CsvParsingException(String.format(errorMessage, e.getMessage()));
+                throw new CsvParsingException(String.format(errorMessage, e.getMessage()), ErrorCode.CSV_PARSING_ERROR);
             }
         });
-        currencyRates.setRates(rateList);
-        return currencyRates;
+        currencyRatesContextHolder.set(rateList);
+        return currencyRatesContextHolder;
+    }
+
+    /**
+     * Generates a map of currency rates from the given headers and row.
+     *
+     * @param headers the headers of the CSV file
+     * @param row     the row containing currency rates
+     *
+     * @return the generated map of currency rates
+     */
+    private Map<String, BigDecimal> generateCurrencyRateMap(String[] headers, String[] row) {
+        return IntStream.range(1, row.length)
+                .mapToObj(i -> new AbstractMap.SimpleEntry<>(getCurrency(i, headers), parseRate(row[i])))
+                .filter(entry -> StringUtils.isNotBlank(entry.getKey()) && entry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**

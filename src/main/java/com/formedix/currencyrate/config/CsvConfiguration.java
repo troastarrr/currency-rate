@@ -1,7 +1,7 @@
 package com.formedix.currencyrate.config;
 
-import com.formedix.currencyrate.domain.CurrencyRates;
 import com.formedix.currencyrate.parser.CurrencyRateCsvParser;
+import com.formedix.currencyrate.repository.CurrencyRatesContextHolder;
 import jakarta.servlet.MultipartConfigElement;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -22,7 +22,7 @@ public class CsvConfiguration {
 
     @Bean
     @Primary
-    public CurrencyRates currencyRateData(ResourceLoader resourceLoader) throws IOException {
+    public CurrencyRatesContextHolder currencyRatesContextHolder(ResourceLoader resourceLoader) throws IOException {
         Resource resource = resourceLoader.getResource(csvProperties.getDefaultCurrencyRateFilePath());
         return currencyRateCsvParser.parse(resource.getInputStream());
     }

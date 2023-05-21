@@ -1,6 +1,6 @@
 package com.formedix.currencyrate.controller;
 
-import com.formedix.currencyrate.domain.CurrencyRates;
+import com.formedix.currencyrate.dto.GetCurrencyRateDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequestMapping("/csv/v1")
 @Tag(name = "CSV File Management", description = "Manage csv files")
@@ -21,7 +23,7 @@ public interface CurrencyRateCsvController {
             description = "Upload and store the file.",
             tags = "CSV File Management"
     )
-    ResponseEntity<CurrencyRates> uploadCsvFile(@Valid @RequestBody final MultipartFile file);
+    ResponseEntity<List<GetCurrencyRateDto>> uploadCsvFile(@Valid @RequestBody final MultipartFile file);
 
     @GetMapping("/current-upload")
     @Operation(
@@ -29,5 +31,5 @@ public interface CurrencyRateCsvController {
             description = "Retrieves th current uploaded csv",
             tags = "CSV File Management"
     )
-    ResponseEntity<CurrencyRates> getCurrentCsvRates();
+    ResponseEntity<List<GetCurrencyRateDto>> getCurrentCsvRates();
 }

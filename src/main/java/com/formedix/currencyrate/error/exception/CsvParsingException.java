@@ -1,11 +1,13 @@
 package com.formedix.currencyrate.error.exception;
 
+import com.formedix.currencyrate.error.domain.ErrorCode;
+
 public class CsvParsingException extends FormedixException {
-    public CsvParsingException(String message) {
-        super(message);
+    public CsvParsingException(String message, ErrorCode errorCode) {
+        super(message, errorCode);
     }
 
-    public CsvParsingException(String message, Throwable e) {
-        super(message, e);
+    public CsvParsingException(String message, Throwable e, ErrorCode errorCode) {
+        super(message, e, errorCode);
     }
 }

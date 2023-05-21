@@ -3,14 +3,15 @@ package com.formedix.currencyrate.repository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CurrencyRateRepository<T, R> {
+public interface CurrencyRateRepository<T> {
 
-    Optional<T> findCurrencyRateByDate(LocalDate date);
+    Optional<T> findByDate(LocalDate date);
 
-    R update(R currencyRates);
+    List<T> update(List<T> currencyRates);
 
-    R get();
+    List<T> findAll();
 }

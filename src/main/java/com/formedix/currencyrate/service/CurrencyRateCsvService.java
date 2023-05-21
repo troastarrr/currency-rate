@@ -1,20 +1,22 @@
 package com.formedix.currencyrate.service;
 
 import com.formedix.currencyrate.domain.CurrencyRate;
-import com.formedix.currencyrate.domain.CurrencyRates;
+import com.formedix.currencyrate.dto.GetCurrencyRateDto;
+import com.formedix.currencyrate.mapper.CurrencyRateMapper;
 import com.formedix.currencyrate.parser.CurrencyRateCsvParser;
 import com.formedix.currencyrate.repository.CurrencyRateRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class CurrencyRateCsvService {
-
+    private final CurrencyRateMapper currencyRateMapper;
     private final CurrencyRateCsvParser currencyRateCsvParser;
-    private final CurrencyRateRepository<CurrencyRate, CurrencyRates> currencyRatesCurrencyRateRepository;
+    private final CurrencyRateRepository<CurrencyRate> currencyRatesCurrencyRateRepository;
 
     /**
      * Updates the currency rates with the data parsed from the provided CSV file.
@@ -23,8 +25,9 @@ public class CurrencyRateCsvService {
      *
      * @return the updated currency rates
      */
-    public CurrencyRates updateCurrencyRates(InputStream inputStream) {
-        return currencyRatesCurrencyRateRepository.update(currencyRateCsvParser.parse(inputStream));
+    public List<GetCurrencyRateDto> updateCurrencyRates(InputStream inputStream) {
+        return currencyRatesCurrencyRateRepository.update(currencyRateCsvParser.parse(inputStream).get())
+                .stream().map(currencyRateMapper::toGetCurrencyRateDto).toList();
     }
 
     /**
@@ -32,7 +35,8 @@ public class CurrencyRateCsvService {
      *
      * @return the current currency rates
      */
-    public CurrencyRates getCurrentCurrencyRates() {
-        return currencyRatesCurrencyRateRepository.get();
+    public List<GetCurrencyRateDto> getCurrentCurrencyRates() {
+        return currencyRatesCurrencyRateRepository.findAll()
+                .stream().map(currencyRateMapper::toGetCurrencyRateDto).toList();
     }
 }

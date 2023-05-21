@@ -56,7 +56,7 @@ To run the application using Maven, follow these steps:
 
 Retrieves the reference rate data for a given date for all available currencies.
 
-- **Endpoint:** `GET /currency-rates/v1/{date}`
+- **Endpoint:** `GET /formedix/currency-rates/v1/{date}`
 - **Description:** Retrieve the reference rate data for a given date for all available currencies.
 - **Tags:** Currency Rate
 
@@ -64,7 +64,7 @@ Retrieves the reference rate data for a given date for all available currencies.
 
 Converts an amount from the source currency to the target currency on a specific date.
 
-- **Endpoint:** `GET /currency-rates/v1/convert`
+- **Endpoint:** `GET /formedix/currency-rates/v1/convert`
 - **Description:** Convert an amount from the source currency to the target currency on a specific date.
 - **Tags:** Currency Rate
 
@@ -72,7 +72,7 @@ Converts an amount from the source currency to the target currency on a specific
 
 Retrieve the highest reference exchange rate achieved by a currency within a specified period.
 
-- **Endpoint:** `GET /currency-rates/v1/highest-rate`
+- **Endpoint:** `GET /formedix/currency-rates/v1/highest-rate`
 - **Description:** Retrieve the highest reference exchange rate achieved by a currency within a specified period.
 - **Tags:** Currency Rate
 
@@ -80,7 +80,7 @@ Retrieve the highest reference exchange rate achieved by a currency within a spe
 
 Calculate the average reference exchange rate of a currency within a specified period.
 
-- **Endpoint:** `GET /currency-rates/v1/average-rate`
+- **Endpoint:** `GET /formedix/currency-rates/v1/average-rate`
 - **Description:** Calculate the average reference exchange rate of a currency within a specified period.
 - **Tags:** Currency Rate
 
@@ -88,7 +88,7 @@ Calculate the average reference exchange rate of a currency within a specified p
 
 Uploads and stores a CSV file containing currency rate data. This will override the default currency rate data.
 
-- **Endpoint:** `POST /csv/v1/upload`
+- **Endpoint:** `POST /formedix/csv/v1/upload`
 - **Description:** Upload and store the CSV file containing currency rate data. This will override the default currency
   rate data.
 - **Tags:** CSV File Management
@@ -97,7 +97,7 @@ Uploads and stores a CSV file containing currency rate data. This will override 
 
 Retrieves the currently uploaded CSV file containing currency rate data.
 
-- **Endpoint:** `GET /csv/v1/current-upload`
+- **Endpoint:** `GET /formedix/csv/v1/current-upload`
 - **Description:** Retrieves the currently uploaded CSV file containing currency rate data.
 - **Tags:** CSV File Management
 
