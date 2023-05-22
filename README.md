@@ -8,7 +8,7 @@ To configure the Currency Rate Controller, follow these steps:
 
 1. Clone the repository to your local machine.
 2. Open the project in your preferred IDE.
-3. Configure the application properties located in `src/main/resources/application.yaml` according to your
+3. Configure the application yaml located in `src/main/resources/application.yaml` according to your
    environment.
 
 ## Initial Data

@@ -14,15 +14,13 @@ import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class JacksonConfiguration {
-
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
-
+    
     @Bean
     @Primary
     public ObjectMapper buildObjectMapper() {
         return Jackson2ObjectMapperBuilder.json()
                 .modules(new JavaTimeModule())
-                .serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(DATE_FORMAT)))
+                .serializers(new LocalDateSerializer(DateTimeFormatter.ISO_LOCAL_DATE))
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .featuresToEnable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
                 .featuresToDisable(SerializationFeature.FAIL_ON_EMPTY_BEANS)

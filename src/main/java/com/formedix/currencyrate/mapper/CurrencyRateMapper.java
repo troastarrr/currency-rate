@@ -6,11 +6,12 @@ import com.formedix.currencyrate.dto.ConvertCurrencyDto;
 import com.formedix.currencyrate.dto.GetCurrencyRateDto;
 import com.formedix.currencyrate.dto.HighestExchangeRateDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface CurrencyRateMapper {
     /**
      * Maps a CurrencyRate entity to GetCurrencyRateDto.
