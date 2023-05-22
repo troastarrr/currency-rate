@@ -29,6 +29,7 @@ public class CurrencyRateService {
     public static final String CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE = "Currency rates not available for the specified date `%s`";
     public static final String CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE = "No currency rates available for the specified date range and currency `%s`";
     public static final String CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE = "Currency rates not available for the specified currencies source currency `%s` and target currency `%s`";
+    
     private final CurrencyRateMapper currencyRateMapper;
     private final CurrencyRateRepository<CurrencyRate> currencyRatesCurrencyRateRepository;
 
