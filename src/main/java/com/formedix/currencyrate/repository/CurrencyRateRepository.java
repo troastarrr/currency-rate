@@ -11,6 +11,8 @@ public interface CurrencyRateRepository<T> {
 
     Optional<T> findByDate(LocalDate date);
 
+    List<T> findBetweenDates(LocalDate startDate, LocalDate endDate);
+
     List<T> update(List<T> currencyRates);
 
     List<T> findAll();

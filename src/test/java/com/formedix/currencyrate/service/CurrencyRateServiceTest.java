@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,9 +164,7 @@ class CurrencyRateServiceTest {
             List<CurrencyRate> currencyRateList, BigDecimal expectedHighestRate) {
 
         // Given
-        IntStream.range(0, currencyRateList.size())
-                .forEach(i -> when(currencyRateRepository.findByDate(startDate.plusDays(i)))
-                        .thenReturn(Optional.of(currencyRateList.get(i))));
+        when(currencyRateRepository.findBetweenDates(startDate, endDate)).thenReturn(currencyRateList);
 
         // When
         HighestExchangeRateDto result = currencyRateService.getHighestExchangeRate(startDate, endDate, currency);
@@ -174,10 +173,7 @@ class CurrencyRateServiceTest {
         assertThat(result.getHighestExchangeRate()).isEqualTo(expectedHighestRate);
 
         // Verify
-        IntStream.range(0, currencyRateList.size())
-                .forEach(i ->
-                        verify(currencyRateRepository, times(1)).findByDate(startDate.plusDays(i))
-                );
+        verify(currencyRateRepository, times(1)).findBetweenDates(startDate, endDate);
     }
 
     @Test
@@ -189,7 +185,7 @@ class CurrencyRateServiceTest {
         String currency = "ABC";  // currency that does not exist
 
         //When
-        when(currencyRateRepository.findByDate(startDate)).thenReturn(Optional.empty());
+        when(currencyRateRepository.findBetweenDates(startDate, endDate)).thenReturn(Collections.emptyList());
 
         //then
         assertThatThrownBy(() -> currencyRateService.getHighestExchangeRate(startDate, endDate, currency))
@@ -197,7 +193,7 @@ class CurrencyRateServiceTest {
                 .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency));
 
         // Verify
-        verify(currencyRateRepository, times(1)).findByDate(startDate);
+        verify(currencyRateRepository, times(1)).findBetweenDates(startDate, endDate);
     }
 
     @ParameterizedTest
@@ -208,15 +204,16 @@ class CurrencyRateServiceTest {
             List<CurrencyRate> currencyRateList, BigDecimal expectedAverageRate) {
 
         // Given
-        IntStream.range(0, currencyRateList.size())
-                .forEach(i -> when(currencyRateRepository.findByDate(startDate.plusDays(i)))
-                        .thenReturn(Optional.of(currencyRateList.get(i))));
+        when(currencyRateRepository.findBetweenDates(startDate, endDate)).thenReturn(currencyRateList);
 
         // When
         AverageExchangeRateDto result = currencyRateService.getAverageExchangeRate(startDate, endDate, currency);
 
         // Then
         assertThat(result.getAverageExchangeRate()).isEqualTo(expectedAverageRate);
+
+        // Verify
+        verify(currencyRateRepository, times(1)).findBetweenDates(startDate, endDate);
     }
 
     @Test
@@ -228,7 +225,7 @@ class CurrencyRateServiceTest {
         String currency = "ABC";  // currency that does not exist in the rates
 
         //When
-        when(currencyRateRepository.findByDate(startDate)).thenReturn(Optional.empty());
+        when(currencyRateRepository.findBetweenDates(startDate, endDate)).thenReturn(Collections.emptyList());
 
         //Then
         assertThatThrownBy(() -> currencyRateService.getAverageExchangeRate(startDate, endDate, currency))

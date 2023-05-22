@@ -32,6 +32,21 @@ public class InMemoryCurrencyRateRepositoryImpl implements CurrencyRateRepositor
     }
 
     /**
+     * Finds currency rates between the specified start and end dates (inclusive).
+     *
+     * @param startDate the start date of the range
+     * @param endDate   the end date of the range
+     *
+     * @return a list of currency rates within the specified date range
+     */
+    @Override
+    public List<CurrencyRate> findBetweenDates(LocalDate startDate, LocalDate endDate) {
+        return currencyRatesContextHolder.get().stream()
+                .filter(rate -> !rate.date().isBefore(startDate) && !rate.date().isAfter(endDate))
+                .toList();
+    }
+
+    /**
      * Updates the currency rates with the provided CurrencyRates object.
      *
      * @param updatedCurrencyRates the CurrencyRates object containing the updated currency rates

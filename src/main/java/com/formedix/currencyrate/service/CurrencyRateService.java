@@ -16,12 +16,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -30,6 +28,7 @@ public class CurrencyRateService {
     public static final String CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE = "Currency rates not available for the specified date `%s`";
     public static final String CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE = "No currency rates available for the specified date range and currency `%s`";
     public static final String CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE = "Currency rates not available for the specified currencies source currency `%s` and target currency `%s`";
+    private static final int DECIMAL_SCALE = 2;
 
     private final CurrencyRateMapper currencyRateMapper;
     private final CurrencyRateRepository<CurrencyRate> currencyRatesCurrencyRateRepository;
@@ -74,7 +73,7 @@ public class CurrencyRateService {
             throw new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE, sourceCurrency, targetCurrency));
         }
 
-        BigDecimal convertedAmount = amount.multiply(targetRateValue).divide(sourceRateValue, 2, RoundingMode.HALF_UP);
+        BigDecimal convertedAmount = amount.multiply(targetRateValue).divide(sourceRateValue, DECIMAL_SCALE, RoundingMode.HALF_UP);
         return currencyRateMapper.toConvertCurrencyDto(date, sourceCurrency, targetCurrency, convertedAmount, sourceRateValue, targetRateValue);
     }
 
@@ -91,7 +90,9 @@ public class CurrencyRateService {
      */
     @Cacheable(value = "highestExchangeRate", key = "{ #startDate, #endDate, #currency }")
     public HighestExchangeRateDto getHighestExchangeRate(LocalDate startDate, LocalDate endDate, String currency) {
-        CurrencyRate highestRate = getCurrencyRateStream(startDate, endDate)
+        List<CurrencyRate> currencyRates = currencyRatesCurrencyRateRepository.findBetweenDates(startDate, endDate);
+
+        CurrencyRate highestRate = currencyRates.stream()
                 .filter(rate -> rate.currencies().containsKey(currency))
                 .max(Comparator.comparing(rate -> rate.currencies().get(currency)))
                 .orElseThrow(() -> new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency)));
@@ -112,33 +113,18 @@ public class CurrencyRateService {
      */
     @Cacheable(value = "averageExchangeRate", key = "{ #startDate, #endDate, #currency }")
     public AverageExchangeRateDto getAverageExchangeRate(LocalDate startDate, LocalDate endDate, String currency) {
-        Optional<Stream<CurrencyRate>> optionalCurrencyRateStream = Optional.of(getCurrencyRateStream(startDate, endDate));
-        BigDecimal averageRateValue = optionalCurrencyRateStream
-                .map(stream -> stream.map(rate -> rate.currencies().get(currency))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.collectingAndThen(
-                                Collectors.averagingDouble(BigDecimal::doubleValue), BigDecimal::valueOf))
-                        .setScale(2, RoundingMode.HALF_UP))
-                .orElseThrow(() -> new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency)));
+        List<CurrencyRate> currencyRates = currencyRatesCurrencyRateRepository.findBetweenDates(startDate, endDate);
+
+        BigDecimal averageRateValue = currencyRates.stream()
+                .map(rate -> rate.currencies().get(currency))
+                .filter(Objects::nonNull)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.averagingDouble(BigDecimal::doubleValue), BigDecimal::valueOf))
+                .setScale(DECIMAL_SCALE, RoundingMode.HALF_UP);
 
         if (averageRateValue.compareTo(BigDecimal.ZERO) <= 0) {
             throw new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency));
         }
-
         return currencyRateMapper.toAverageExchangeRateDto(startDate, endDate, currency, averageRateValue);
-    }
-
-    /**
-     * Retrieves a stream of currency rates within a specified date range.
-     *
-     * @param startDate the start date of the range
-     * @param endDate   the end date of the range
-     *
-     * @return the stream of currency rates within the specified date range
-     */
-    private Stream<CurrencyRate> getCurrencyRateStream(LocalDate startDate, LocalDate endDate) {
-        return Stream.iterate(startDate, date -> date.plusDays(1))
-                .limit(ChronoUnit.DAYS.between(startDate, endDate.plusDays(1)))
-                .flatMap(date -> currencyRatesCurrencyRateRepository.findByDate(date).stream());
     }
 }
