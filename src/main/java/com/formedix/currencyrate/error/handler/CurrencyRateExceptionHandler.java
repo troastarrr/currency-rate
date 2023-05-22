@@ -32,7 +32,7 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleCurrencyRateNotFoundException(CurrencyRateNotFoundException e) {
-        log.warn("Currency rate not found error: `{}`", e.getMessage());
+        log.warn("Currency rate not found error: `{}`", e.getMessage(), e);
         Error response = new Error()
                 .errorCode(e.getErrorCode())
                 .errorMessages(List.of(e.getMessage()));
@@ -48,7 +48,7 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        log.warn("Validation error occurred: `{}`", e.getMessage());
+        log.warn("Validation error occurred: `{}`", e.getMessage(), e);
         Error response = new Error()
                 .errorCode(ErrorCode.VALIDATION_ERROR)
                 .errorMessages(List.of(e.getMessage()));
@@ -64,7 +64,7 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        log.warn("Validation error occurred: `{}`", e.getMessage());
+        log.warn("Validation error occurred: `{}`", e.getMessage(), e);
         Error response = new Error()
                 .errorCode(ErrorCode.VALIDATION_ERROR)
                 .errorMessages(List.of(e.getMessage()));
@@ -80,7 +80,7 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleCsvFileException(CsvFileException e) {
-        log.warn("CSV file error occurred: `{}`", e.getMessage());
+        log.warn("CSV file error occurred: `{}`", e.getMessage(), e);
         Error response = new Error()
                 .errorCode(e.getErrorCode())
                 .errorMessages(List.of(e.getMessage()));
@@ -96,7 +96,7 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleCsvParsingException(CsvParsingException e) {
-        log.warn("CSV file error occurred: `{}`", e.getMessage());
+        log.warn("CSV file error occurred: `{}`", e.getMessage(), e);
         Error response = new Error()
                 .errorCode(e.getErrorCode())
                 .errorMessages(List.of(e.getMessage()));
@@ -112,7 +112,7 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleInvalidDateException(InvalidDateException e) {
-        log.warn("Invalid date range error: `{}`", e.getMessage());
+        log.warn("Invalid date range error: `{}`", e.getMessage(), e);
         Error response = new Error()
                 .errorCode(e.getErrorCode())
                 .errorMessages(List.of(e.getMessage()));
@@ -128,12 +128,10 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleGenericException(Exception e) {
-        log.warn("Internal server error occurred: `{}`", e.getMessage());
+        log.warn("Internal server error occurred: `{}`", e.getMessage(), e);
         Error response = new Error()
                 .errorCode(ErrorCode.SERVER_ERROR)
                 .errorMessages(List.of(e.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-
 }

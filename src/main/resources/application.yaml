@@ -1,9 +1,17 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  cache:
+    spec: maximumSize=100,expireAfterWrite=600s
+    cache-names:
+      - currencyRates
+      - convertCurrency
+      - highestExchangeRate
+      - averageExchangeRate
+
+rootUri: /formedix
+
 csv:
   defaultCurrencyRateFilePath: classpath:/templates/csv/default-currency-rates.csv
   maxUploadFileSize: 10
   maxRequestSize: 10
-
-rootUri: /formedix

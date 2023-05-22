@@ -10,6 +10,7 @@ import com.formedix.currencyrate.mapper.CurrencyRateMapper;
 import com.formedix.currencyrate.repository.CurrencyRateRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,7 +30,7 @@ public class CurrencyRateService {
     public static final String CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE = "Currency rates not available for the specified date `%s`";
     public static final String CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE = "No currency rates available for the specified date range and currency `%s`";
     public static final String CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE = "Currency rates not available for the specified currencies source currency `%s` and target currency `%s`";
-    
+
     private final CurrencyRateMapper currencyRateMapper;
     private final CurrencyRateRepository<CurrencyRate> currencyRatesCurrencyRateRepository;
 
@@ -42,6 +43,7 @@ public class CurrencyRateService {
      *
      * @throws CurrencyRateNotFoundException if currency rates are not available for the specified date
      */
+    @Cacheable(value = "currencyRates", key = "#date")
     public GetCurrencyRateDto getCurrencyRatesByDate(LocalDate date) {
         return currencyRatesCurrencyRateRepository.findByDate(date)
                 .map(currencyRateMapper::toGetCurrencyRateDto)
@@ -60,6 +62,7 @@ public class CurrencyRateService {
      *
      * @throws CurrencyRateNotFoundException if currency rates are not available for the specified date or currencies
      */
+    @Cacheable(value = "convertCurrency", key = "{ #date, #sourceCurrency, #targetCurrency, #amount }")
     public ConvertCurrencyDto convertCurrency(LocalDate date, String sourceCurrency, String targetCurrency, BigDecimal amount) {
         CurrencyRate sourceRate = currencyRatesCurrencyRateRepository.findByDate(date)
                 .orElseThrow(() -> new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE, date)));
@@ -86,6 +89,7 @@ public class CurrencyRateService {
      *
      * @throws CurrencyRateNotFoundException if currency rates are not available for the specified date range or currency
      */
+    @Cacheable(value = "highestExchangeRate", key = "{ #startDate, #endDate, #currency }")
     public HighestExchangeRateDto getHighestExchangeRate(LocalDate startDate, LocalDate endDate, String currency) {
         CurrencyRate highestRate = getCurrencyRateStream(startDate, endDate)
                 .filter(rate -> rate.currencies().containsKey(currency))
@@ -106,6 +110,7 @@ public class CurrencyRateService {
      *
      * @throws CurrencyRateNotFoundException if currency rates are not available for the specified date range or currency
      */
+    @Cacheable(value = "averageExchangeRate", key = "{ #startDate, #endDate, #currency }")
     public AverageExchangeRateDto getAverageExchangeRate(LocalDate startDate, LocalDate endDate, String currency) {
         Optional<Stream<CurrencyRate>> optionalCurrencyRateStream = Optional.of(getCurrencyRateStream(startDate, endDate));
         BigDecimal averageRateValue = optionalCurrencyRateStream

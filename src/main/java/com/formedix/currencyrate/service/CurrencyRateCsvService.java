@@ -6,6 +6,7 @@ import com.formedix.currencyrate.mapper.CurrencyRateMapper;
 import com.formedix.currencyrate.parser.CurrencyRateCsvParser;
 import com.formedix.currencyrate.repository.CurrencyRateRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -25,6 +26,7 @@ public class CurrencyRateCsvService {
      *
      * @return the updated currency rates
      */
+    @CacheEvict(allEntries = true, value = {"currencyRates", "convertCurrency", "highestExchangeRate", "averageExchangeRate"})
     public List<GetCurrencyRateDto> updateCurrencyRates(InputStream inputStream) {
         return currencyRatesCurrencyRateRepository.update(currencyRateCsvParser.parse(inputStream).get())
                 .stream().map(currencyRateMapper::toGetCurrencyRateDto).toList();
