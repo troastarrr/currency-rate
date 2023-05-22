@@ -21,5 +21,4 @@ public class CurrencyRateValidator {
             throw new InvalidDateException(String.format("Invalid date range: Start date `%s` should not be greater than End date `%s`", startDate, endDate));
         }
     }
-
 }

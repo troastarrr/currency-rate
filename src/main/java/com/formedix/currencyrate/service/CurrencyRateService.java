@@ -60,8 +60,8 @@ public class CurrencyRateService {
         CurrencyRate sourceRate = currencyRatesCurrencyRateRepository.findByDate(date)
                 .orElseThrow(() -> new CurrencyRateNotFoundException("Currency rates not available for the specified date: " + date));
 
-        BigDecimal sourceRateValue = sourceRate.getCurrencies().get(sourceCurrency);
-        BigDecimal targetRateValue = sourceRate.getCurrencies().get(targetCurrency);
+        BigDecimal sourceRateValue = sourceRate.currencies().get(sourceCurrency);
+        BigDecimal targetRateValue = sourceRate.currencies().get(targetCurrency);
 
         if (sourceRateValue == null || targetRateValue == null) {
             String errorMessage = "Currency rates not available for the specified currencies source currency `%s` and target currency `%s`";
@@ -85,11 +85,11 @@ public class CurrencyRateService {
      */
     public HighestExchangeRateDto getHighestExchangeRate(LocalDate startDate, LocalDate endDate, String currency) {
         CurrencyRate highestRate = getCurrencyRateStream(startDate, endDate)
-                .filter(rate -> rate.getCurrencies().containsKey(currency))
-                .max(Comparator.comparing(rate -> rate.getCurrencies().get(currency)))
+                .filter(rate -> rate.currencies().containsKey(currency))
+                .max(Comparator.comparing(rate -> rate.currencies().get(currency)))
                 .orElseThrow(() -> new CurrencyRateNotFoundException("Currency rates not available for the specified date range and currency"));
 
-        return currencyRateMapper.toHighestExchangeRateDto(startDate, endDate, currency, highestRate.getCurrencies().get(currency));
+        return currencyRateMapper.toHighestExchangeRateDto(startDate, endDate, currency, highestRate.currencies().get(currency));
     }
 
     /**
@@ -106,7 +106,7 @@ public class CurrencyRateService {
     public AverageExchangeRateDto getAverageExchangeRate(LocalDate startDate, LocalDate endDate, String currency) {
         Optional<Stream<CurrencyRate>> optionalCurrencyRateStream = Optional.of(getCurrencyRateStream(startDate, endDate));
         BigDecimal averageRateValue = optionalCurrencyRateStream
-                .map(stream -> stream.map(rate -> rate.getCurrencies().get(currency))
+                .map(stream -> stream.map(rate -> rate.currencies().get(currency))
                         .filter(Objects::nonNull)
                         .collect(Collectors.collectingAndThen(
                                 Collectors.averagingDouble(BigDecimal::doubleValue), BigDecimal::valueOf))

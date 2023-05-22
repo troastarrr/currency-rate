@@ -5,6 +5,7 @@ import com.formedix.currencyrate.error.exception.CsvFileException;
 import com.formedix.currencyrate.error.exception.CsvParsingException;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,9 +24,17 @@ public class CsvValidator {
      * @throws CsvFileException if the file is invalid or has an unsupported format
      */
     public static void validate(@NonNull MultipartFile file) throws CsvFileException {
-        if (!StringUtils.equals(TEXT_CSV, file.getContentType())) {
-            throw new CsvFileException("Invalid file or file format. Only CSV files are allowed.", ErrorCode.INVALID_CSV_FILE_ERROR);
+        try {
+            if (!StringUtils.equals(TEXT_CSV, file.getContentType())) {
+                throw new CsvFileException("Invalid file or file format. Only CSV files are allowed.", ErrorCode.INVALID_CSV_FILE_ERROR);
+            }
+            if (ArrayUtils.isEmpty(file.getBytes())) {
+                throw new CsvFileException("Empty csv file is not allowed.", ErrorCode.INVALID_CSV_FILE_ERROR);
+            }
+        } catch (Exception e) {
+            throw new CsvFileException(e.getMessage(), ErrorCode.INVALID_CSV_FILE_ERROR);
         }
+
     }
 
     /**

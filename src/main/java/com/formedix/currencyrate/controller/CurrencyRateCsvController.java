@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/csv/v1")
@@ -23,7 +24,7 @@ public interface CurrencyRateCsvController {
             description = "Upload and store the file.",
             tags = "CSV File Management"
     )
-    ResponseEntity<List<GetCurrencyRateDto>> uploadCsvFile(@Valid @RequestBody final MultipartFile file);
+    ResponseEntity<List<GetCurrencyRateDto>> uploadCsvFile(@Valid @RequestBody final MultipartFile file) throws IOException;
 
     @GetMapping("/current-upload")
     @Operation(

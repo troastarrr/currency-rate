@@ -27,7 +27,7 @@ public class InMemoryCurrencyRateRepositoryImpl implements CurrencyRateRepositor
     @Override
     public Optional<CurrencyRate> findByDate(LocalDate date) {
         return currencyRatesContextHolder.get().stream()
-                .filter(rate -> Objects.equals(date, rate.getDate()))
+                .filter(rate -> Objects.equals(date, rate.date()))
                 .findFirst();
     }
 

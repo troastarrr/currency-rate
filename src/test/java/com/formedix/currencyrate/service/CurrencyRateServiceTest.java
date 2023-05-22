@@ -54,12 +54,11 @@ class CurrencyRateServiceTest {
     void getCurrencyRatesByDate_WhenRatesAvailable_ReturnDto() {
         // Given
         LocalDate requestDate = LocalDate.parse("2020-12-01");
-        CurrencyRate existingCurrencyRate = new CurrencyRate();
+
         Map<String, BigDecimal> currencies = new HashMap<>();
         currencies.put("USD", BigDecimal.valueOf(1.0));
         currencies.put("EUR", BigDecimal.valueOf(0.85));
-        existingCurrencyRate.setDate(requestDate);
-        existingCurrencyRate.setCurrencies(currencies);
+        CurrencyRate existingCurrencyRate = new CurrencyRate(requestDate, currencies);
 
         when(currencyRateRepository.findByDate(requestDate)).thenReturn(Optional.of(existingCurrencyRate));
 
@@ -67,8 +66,8 @@ class CurrencyRateServiceTest {
         GetCurrencyRateDto result = currencyRateService.getCurrencyRatesByDate(requestDate);
 
         // Then
-        assertThat(result.getCurrencies()).isEqualTo(existingCurrencyRate.getCurrencies());
-        assertThat(result.getDate()).isEqualTo(existingCurrencyRate.getDate());
+        assertThat(result.getCurrencies()).isEqualTo(existingCurrencyRate.currencies());
+        assertThat(result.getDate()).isEqualTo(existingCurrencyRate.date());
         verify(currencyRateRepository, times(1)).findByDate(requestDate);
     }
 
@@ -140,9 +139,7 @@ class CurrencyRateServiceTest {
         currencies.put("USD", BigDecimal.valueOf(1.0));
         currencies.put("PHP", BigDecimal.valueOf(1.0)); // Missing target currency in the map
 
-        CurrencyRate sourceRate = new CurrencyRate();
-        sourceRate.setDate(date);
-        sourceRate.setCurrencies(currencies);
+        CurrencyRate sourceRate = new CurrencyRate(date, currencies);
 
         when(currencyRateRepository.findByDate(date)).thenReturn(Optional.of(sourceRate));
 
@@ -235,7 +232,7 @@ class CurrencyRateServiceTest {
                 .isInstanceOf(CurrencyRateNotFoundException.class)
                 .hasMessage("No currency rates available for the specified date range and currency");
     }
-    
+
     private static Stream<Arguments> provideCurrencyRateCombinationsForAverageRate() {
         LocalDate startDate = LocalDate.of(2023, 1, 1);
         LocalDate endDate = LocalDate.of(2023, 1, 5);
@@ -344,10 +341,7 @@ class CurrencyRateServiceTest {
     }
 
     private static CurrencyRate createCurrencyRate(LocalDate date, Currency... currencies) {
-        CurrencyRate currencyRate = new CurrencyRate();
-        currencyRate.setDate(date);
-        currencyRate.setCurrencies(Arrays.stream(currencies).collect(Collectors.toMap(Currency::code, Currency::rate)));
-        return currencyRate;
+        return new CurrencyRate(date, Arrays.stream(currencies).collect(Collectors.toMap(Currency::code, Currency::rate)));
     }
 
     private static Currency createCurrency(String code, BigDecimal rate) {

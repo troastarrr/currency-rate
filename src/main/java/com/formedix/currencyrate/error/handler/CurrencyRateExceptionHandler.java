@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
@@ -47,6 +48,22 @@ public class CurrencyRateExceptionHandler {
      */
     @ExceptionHandler
     public ResponseEntity<Error> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        log.warn("Validation error occurred: `{}`", e.getMessage());
+        Error response = new Error()
+                .errorCode(ErrorCode.VALIDATION_ERROR)
+                .errorMessages(List.of(e.getMessage()));
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles the exception when validation errors occur during method mismatch validation.
+     *
+     * @param e the exception indicating validation errors
+     *
+     * @return the response entity with error details
+     */
+    @ExceptionHandler
+    public ResponseEntity<Error> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         log.warn("Validation error occurred: `{}`", e.getMessage());
         Error response = new Error()
                 .errorCode(ErrorCode.VALIDATION_ERROR)
@@ -117,4 +134,6 @@ public class CurrencyRateExceptionHandler {
                 .errorMessages(List.of(e.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
 }

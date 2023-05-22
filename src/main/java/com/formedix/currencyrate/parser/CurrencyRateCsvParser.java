@@ -68,9 +68,7 @@ public class CurrencyRateCsvParser {
             try {
                 LocalDate date = parseDate(row[0]);
                 Map<String, BigDecimal> currencies = generateCurrencyRateMap(headers, row);
-                CurrencyRate currencyRate = new CurrencyRate();
-                currencyRate.setDate(date);
-                currencyRate.setCurrencies(currencies);
+                CurrencyRate currencyRate = new CurrencyRate(date, currencies);
                 rateList.add(currencyRate);
             } catch (DateTimeParseException e) {
                 String errorMessage = "Unable to parse CSV date with error message: `%s`";
