@@ -30,6 +30,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static com.formedix.currencyrate.service.CurrencyRateService.CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE;
+import static com.formedix.currencyrate.service.CurrencyRateService.CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE;
+import static com.formedix.currencyrate.service.CurrencyRateService.CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.times;
@@ -82,7 +85,7 @@ class CurrencyRateServiceTest {
         // Then
         assertThatThrownBy(() -> currencyRateService.getCurrencyRatesByDate(date))
                 .isInstanceOf(CurrencyRateNotFoundException.class)
-                .hasMessage("Currency rates not available for the specified date: " + date);
+                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE, date));
 
         verify(currencyRateRepository, times(1)).findByDate(date);
     }
@@ -120,7 +123,7 @@ class CurrencyRateServiceTest {
         // Then
         assertThatThrownBy(() -> currencyRateService.convertCurrency(date, sourceCurrency, targetCurrency, amount))
                 .isInstanceOf(CurrencyRateNotFoundException.class)
-                .hasMessage("Currency rates not available for the specified date: " + date);
+                .hasMessageContaining(String.format(CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE, date));
 
         // Verify
         verify(currencyRateRepository, times(1)).findByDate(date);
@@ -146,7 +149,7 @@ class CurrencyRateServiceTest {
         // Then
         assertThatThrownBy(() -> currencyRateService.convertCurrency(date, sourceCurrency, targetCurrency, amount))
                 .isInstanceOf(CurrencyRateNotFoundException.class)
-                .hasMessage("Currency rates not available for the specified currencies source currency `1.0` and target currency `null`");
+                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE, sourceCurrency, targetCurrency));
 
         // Verify
         verify(currencyRateRepository, times(1)).findByDate(date);
@@ -191,7 +194,7 @@ class CurrencyRateServiceTest {
         //then
         assertThatThrownBy(() -> currencyRateService.getHighestExchangeRate(startDate, endDate, currency))
                 .isInstanceOf(CurrencyRateNotFoundException.class)
-                .hasMessage("Currency rates not available for the specified date range and currency");
+                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency));
 
         // Verify
         verify(currencyRateRepository, times(1)).findByDate(startDate);
@@ -230,7 +233,7 @@ class CurrencyRateServiceTest {
         //Then
         assertThatThrownBy(() -> currencyRateService.getAverageExchangeRate(startDate, endDate, currency))
                 .isInstanceOf(CurrencyRateNotFoundException.class)
-                .hasMessage("No currency rates available for the specified date range and currency");
+                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency));
     }
 
     private static Stream<Arguments> provideCurrencyRateCombinationsForAverageRate() {
