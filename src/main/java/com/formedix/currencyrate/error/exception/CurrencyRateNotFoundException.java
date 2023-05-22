@@ -1,6 +1,6 @@
 package com.formedix.currencyrate.error.exception;
 
-import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.ErrorCode;
 
 public class CurrencyRateNotFoundException extends FormedixException {
     public CurrencyRateNotFoundException(String message) {

@@ -1,6 +1,6 @@
 package com.formedix.currencyrate.validator;
 
-import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.ErrorCode;
 import com.formedix.currencyrate.error.exception.CsvFileException;
 import com.formedix.currencyrate.error.exception.CsvParsingException;
 import lombok.NonNull;

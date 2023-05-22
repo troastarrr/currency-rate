@@ -1,7 +1,7 @@
 package com.formedix.currencyrate.parser;
 
 import com.formedix.currencyrate.domain.CurrencyRate;
-import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.ErrorCode;
 import com.formedix.currencyrate.error.exception.CsvParsingException;
 import com.formedix.currencyrate.repository.CurrencyRatesContextHolder;
 import com.formedix.currencyrate.validator.CsvValidator;

@@ -2,7 +2,7 @@ package com.formedix.currencyrate.controller.impl;
 
 import com.formedix.currencyrate.controller.CurrencyRateCsvController;
 import com.formedix.currencyrate.dto.GetCurrencyRateDto;
-import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.ErrorCode;
 import com.formedix.currencyrate.error.exception.CsvFileException;
 import com.formedix.currencyrate.service.CurrencyRateCsvService;
 import com.formedix.currencyrate.validator.CsvValidator;

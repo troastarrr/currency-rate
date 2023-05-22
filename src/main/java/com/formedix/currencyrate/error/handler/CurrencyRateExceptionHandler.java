@@ -1,7 +1,7 @@
 package com.formedix.currencyrate.error.handler;
 
-import com.formedix.currencyrate.error.domain.Error;
-import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.Error;
+import com.formedix.currencyrate.error.ErrorCode;
 import com.formedix.currencyrate.error.exception.CsvFileException;
 import com.formedix.currencyrate.error.exception.CsvParsingException;
 import com.formedix.currencyrate.error.exception.CurrencyRateNotFoundException;

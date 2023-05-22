@@ -1,6 +1,6 @@
 package com.formedix.currencyrate.error.exception;
 
-import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.ErrorCode;
 import lombok.Getter;
 
 import java.util.UUID;

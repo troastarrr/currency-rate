@@ -1,4 +1,4 @@
-package com.formedix.currencyrate.error.domain;
+package com.formedix.currencyrate.error;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -15,9 +15,8 @@ import java.util.UUID;
 @Accessors(fluent = true, chain = true)
 @Getter(onMethod = @__(@JsonProperty))
 public class Error {
-    private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private List<String> errorMessages;
     private ErrorCode errorCode;
     private String errorReferenceId = UUID.randomUUID().toString();
-    private String timestamp = LocalDateTime.now(Clock.systemUTC()).format(TIMESTAMP_FORMAT);
+    private String timestamp = LocalDateTime.now(Clock.systemUTC()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 }

@@ -1,6 +1,6 @@
 package com.formedix.currencyrate.error.exception;
 
-import com.formedix.currencyrate.error.domain.ErrorCode;
+import com.formedix.currencyrate.error.ErrorCode;
 
 public class CsvParsingException extends FormedixException {
     public CsvParsingException(String message, ErrorCode errorCode) {

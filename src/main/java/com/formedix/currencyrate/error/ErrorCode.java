@@ -1,4 +1,4 @@
-package com.formedix.currencyrate.error.domain;
+package com.formedix.currencyrate.error;
 
 public enum ErrorCode {
     CURRENCY_RATE_NOT_FOUND,
