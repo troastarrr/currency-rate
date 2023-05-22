@@ -1,6 +1,7 @@
 package com.formedix.currencyrate.service;
 
 import com.formedix.currencyrate.domain.CurrencyRate;
+import com.formedix.currencyrate.dto.AverageExchangeRateDto;
 import com.formedix.currencyrate.dto.ConvertCurrencyDto;
 import com.formedix.currencyrate.dto.GetCurrencyRateDto;
 import com.formedix.currencyrate.dto.HighestExchangeRateDto;
@@ -199,6 +200,67 @@ class CurrencyRateServiceTest {
         verify(currencyRateRepository, times(1)).findByDate(startDate);
     }
 
+    @ParameterizedTest
+    @MethodSource("provideCurrencyRateCombinationsForAverageRate")
+    @DisplayName("Should get the average exchange rate successfully when rates are available for the specified date range and currency")
+    void givenRatesAvailableAndCurrencyValid_whenGetAverageExchangeRate_thenReturnAverageExchangeRateDto(
+            LocalDate startDate, LocalDate endDate, String currency,
+            List<CurrencyRate> currencyRateList, BigDecimal expectedAverageRate) {
+
+        // Given
+        IntStream.range(0, currencyRateList.size())
+                .forEach(i -> when(currencyRateRepository.findByDate(startDate.plusDays(i)))
+                        .thenReturn(Optional.of(currencyRateList.get(i))));
+
+        // When
+        AverageExchangeRateDto result = currencyRateService.getAverageExchangeRate(startDate, endDate, currency);
+
+        // Then
+        assertThat(result.getAverageExchangeRate()).isEqualTo(expectedAverageRate);
+    }
+
+    @Test
+    @DisplayName("Should throw CurrencyRateNotFoundException when no rates are available for the specified currency")
+    void givenNoRatesAvailableForSpecifiedCurrency_whenGetAverageExchangeRate_thenThrowCurrencyRateNotFoundException() {
+        //Given
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 1, 5);
+        String currency = "ABC";  // currency that does not exist in the rates
+
+        //When
+        when(currencyRateRepository.findByDate(startDate)).thenReturn(Optional.empty());
+
+        //Then
+        assertThatThrownBy(() -> currencyRateService.getAverageExchangeRate(startDate, endDate, currency))
+                .isInstanceOf(CurrencyRateNotFoundException.class)
+                .hasMessage("No currency rates available for the specified date range and currency");
+    }
+    
+    private static Stream<Arguments> provideCurrencyRateCombinationsForAverageRate() {
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 1, 5);
+
+        // Assuming we have currency rates for 5 consecutive days
+        List<CurrencyRate> currencyRateList = IntStream.rangeClosed(1, 5)
+                .mapToObj(i -> createCurrencyRate(
+                        LocalDate.of(2023, 1, i),
+                        new Currency("USD", BigDecimal.valueOf(i * 1.55)),
+                        new Currency("EUR", BigDecimal.valueOf(i * 2.55)),
+                        new Currency("GBP", BigDecimal.valueOf(i * 3.55)),
+                        new Currency("JPY", BigDecimal.valueOf(i * 4.55)),
+                        new Currency("CAD", BigDecimal.valueOf(i * 5.55))
+                ))
+                .collect(Collectors.toList());
+
+        return Stream.of(
+                Arguments.of(startDate, endDate, "USD", currencyRateList, BigDecimal.valueOf(4.65)),
+                Arguments.of(startDate, endDate, "EUR", currencyRateList, BigDecimal.valueOf(7.65)),
+                Arguments.of(startDate, endDate, "GBP", currencyRateList, BigDecimal.valueOf(10.65)),
+                Arguments.of(startDate, endDate, "JPY", currencyRateList, BigDecimal.valueOf(13.65)),
+                Arguments.of(startDate, endDate, "CAD", currencyRateList, BigDecimal.valueOf(16.65))
+        );
+    }
+
     private static Stream<Arguments> provideCurrencyRateCombinationsForHighestRate() {
         LocalDate startDate = LocalDate.of(2023, 1, 1);
         LocalDate endDate = LocalDate.of(2023, 1, 5);
@@ -295,25 +357,3 @@ class CurrencyRateServiceTest {
     private record Currency(String code, BigDecimal rate) {
     }
 }
-
-
-//    // Date 1: 2021-01-15
-//    LocalDate date2 = LocalDate.parse("2021-01-15");
-//    CurrencyRate currencyRate2 = new CurrencyRate();
-//    Map<String, BigDecimal> currencies2 = new HashMap<>();
-//        currencies2.put("USD", BigDecimal.valueOf(1.2));
-//                currencies2.put("EUR", BigDecimal.valueOf(0.9));
-//                currencies2.put("GBP", BigDecimal.valueOf(0.75));
-//                currencyRate2.setDate(date2);
-//                currencyRate2.setCurrencies(currencies2);
-//
-//                // Date 2: 2022-06-30
-//                LocalDate date3 = LocalDate.parse("2022-06-30");
-//                CurrencyRate currencyRate3 = new CurrencyRate();
-//                Map<String, BigDecimal> currencies3 = new HashMap<>();
-//        currencies3.put("USD", BigDecimal.valueOf(1.1));
-//        currencies3.put("EUR", BigDecimal.valueOf(0.95));
-//        currencies3.put("GBP", BigDecimal.valueOf(0.8));
-//        currencies3.put("CAD", BigDecimal.valueOf(1.25));
-//        currencyRate3.setDate(date3);
-//        currencyRate3.setCurrencies(currencies3);
