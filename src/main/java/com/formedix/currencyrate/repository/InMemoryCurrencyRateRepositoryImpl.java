@@ -1,7 +1,7 @@
 package com.formedix.currencyrate.repository;
 
 import com.formedix.currencyrate.domain.CurrencyRate;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -13,9 +13,9 @@ import java.util.Optional;
  * Holds the current currency rates in memory repository.
  */
 @Repository
+@AllArgsConstructor
 public class InMemoryCurrencyRateRepositoryImpl implements CurrencyRateRepository<CurrencyRate> {
-    @Autowired
-    private CurrencyRatesContextHolder currencyRatesContextHolder;
+    private final CurrencyRatesContextHolder currencyRatesContextHolder;
 
     /**
      * Finds a currency rate by the specified date.
@@ -42,7 +42,7 @@ public class InMemoryCurrencyRateRepositoryImpl implements CurrencyRateRepositor
     @Override
     public List<CurrencyRate> findBetweenDates(LocalDate startDate, LocalDate endDate) {
         return currencyRatesContextHolder.get().stream()
-                .filter(rate -> !rate.date().isBefore(startDate) && !rate.date().isAfter(endDate))
+                .filter(rate -> !rate.date().isBefore(startDate) && rate.date().isBefore(endDate.plusDays(1)))
                 .toList();
     }
 

@@ -1,4 +1,4 @@
-package com.formedix.currencyrate.controller.impl;
+package com.formedix.currencyrate.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formedix.currencyrate.dto.AverageExchangeRateDto;

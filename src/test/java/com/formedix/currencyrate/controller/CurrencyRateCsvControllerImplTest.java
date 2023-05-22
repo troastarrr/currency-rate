@@ -1,5 +1,6 @@
-package com.formedix.currencyrate.controller.impl;
+package com.formedix.currencyrate.controller;
 
+import com.formedix.currencyrate.controller.impl.CurrencyRateCsvControllerImpl;
 import com.formedix.currencyrate.dto.GetCurrencyRateDto;
 import com.formedix.currencyrate.service.CurrencyRateCsvService;
 import org.junit.jupiter.api.BeforeEach;
