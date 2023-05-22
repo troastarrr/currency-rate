@@ -29,9 +29,6 @@ import java.util.stream.IntStream;
 @Component
 @Slf4j
 public class CurrencyRateCsvParser {
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     /**
      * Parses the provided CSV file input stream into a {@link CurrencyRatesContextHolder} object.
      *
@@ -50,7 +47,6 @@ public class CurrencyRateCsvParser {
             throw new CsvParsingException("Error occurred while parsing the CSV file", e, ErrorCode.CSV_PARSING_ERROR);
         }
     }
-
 
     /**
      * Creates a {@link CurrencyRatesContextHolder} object from the rows of the CSV file.
@@ -105,7 +101,7 @@ public class CurrencyRateCsvParser {
      * @throws DateTimeParseException if the date string is not in the expected format
      */
     private LocalDate parseDate(String dateString) {
-        return LocalDate.parse(dateString, DATE_FORMATTER);
+        return LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
     /**
