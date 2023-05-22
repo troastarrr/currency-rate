@@ -190,7 +190,7 @@ class CurrencyRateServiceTest {
         //then
         assertThatThrownBy(() -> currencyRateService.getHighestExchangeRate(startDate, endDate, currency))
                 .isInstanceOf(CurrencyRateNotFoundException.class)
-                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency));
+                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, startDate, endDate, currency));
 
         // Verify
         verify(currencyRateRepository, times(1)).findBetweenDates(startDate, endDate);
@@ -230,7 +230,7 @@ class CurrencyRateServiceTest {
         //Then
         assertThatThrownBy(() -> currencyRateService.getAverageExchangeRate(startDate, endDate, currency))
                 .isInstanceOf(CurrencyRateNotFoundException.class)
-                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency));
+                .hasMessage(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, startDate, endDate, currency));
     }
 
     private static Stream<Arguments> provideCurrencyRateCombinationsForAverageRate() {

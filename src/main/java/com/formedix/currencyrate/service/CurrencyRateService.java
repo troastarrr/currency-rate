@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 public class CurrencyRateService {
-    public static final String CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE = "Currency rates not available for the specified date `%s`";
-    public static final String CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE = "No currency rates available for the specified date range and currency `%s`";
-    public static final String CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE = "Currency rates not available for the specified currencies source currency `%s` and target currency `%s`";
+    public static final String CURRENCY_NOT_FOUND_FOR_DATE_ERROR_MESSAGE = "Currency rates are not available for the specified date `%s`";
+    public static final String CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE = "No currency rates available from `%s` to `%s` for the specified currency `%s`";
+    public static final String CURRENCY_NOT_FOUND_FOR_TARGET_AND_SOURCE_CURRENCY_ERROR_MESSAGE = "Currency rates are not available for the specified source currency `%s` and target currency `%s`";
     private static final int DECIMAL_SCALE = 2;
 
     private final CurrencyRateMapper currencyRateMapper;
@@ -95,7 +95,7 @@ public class CurrencyRateService {
         CurrencyRate highestRate = currencyRates.stream()
                 .filter(rate -> rate.currencies().containsKey(currency))
                 .max(Comparator.comparing(rate -> rate.currencies().get(currency)))
-                .orElseThrow(() -> new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency)));
+                .orElseThrow(() -> new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, startDate, endDate, currency)));
 
         return currencyRateMapper.toHighestExchangeRateDto(startDate, endDate, currency, highestRate.currencies().get(currency));
     }
@@ -123,7 +123,7 @@ public class CurrencyRateService {
                 .setScale(DECIMAL_SCALE, RoundingMode.HALF_UP);
 
         if (averageRateValue.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, currency));
+            throw new CurrencyRateNotFoundException(String.format(CURRENCY_NOT_FOUND_FOR_DATE_AND_CURRENCY_ERROR_MESSAGE, startDate, endDate, currency));
         }
         return currencyRateMapper.toAverageExchangeRateDto(startDate, endDate, currency, averageRateValue);
     }
